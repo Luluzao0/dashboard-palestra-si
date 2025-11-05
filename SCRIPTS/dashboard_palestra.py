@@ -17,8 +17,8 @@ plt.rcParams['figure.facecolor'] = 'white'
 # Carregar dados normalizados
 @st.cache_data
 def carregar_dados():
-    # Usar arquivo normalizado na pasta DADOS
-    df = pd.read_excel('DADOS/Palestra_Dados_Normalizados.xlsx')
+    # Usar arquivo na pasta data
+    df = pd.read_excel('data/palestra_desenvolvimento.xlsx')
     
     df['data_hora'] = pd.to_datetime(df['data_hora'])
     
