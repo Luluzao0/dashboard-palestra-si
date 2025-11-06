@@ -31,14 +31,43 @@ plt.rcParams['figure.figsize'] = (12, 6)
 
 @st.cache_data
 def carregar_dados():
-    """Carrega dados do arquivo Excel"""
-    df = pd.read_excel('data/palestra_desenvolvimento.xlsx')
+    """Carrega dados do arquivo Excel - compatível com qualquer caminho"""
+    import os
+    import glob
+    
+    # Tentar vários caminhos
+    paths = [
+        'data/palestra_desenvolvimento.xlsx',
+        './data/palestra_desenvolvimento.xlsx',
+        os.path.join('data', 'palestra_desenvolvimento.xlsx'),
+    ]
+    
+    df = None
+    for path in paths:
+        try:
+            if os.path.exists(path):
+                df = pd.read_excel(path)
+                st.write(f"✅ Dados carregados de: {path}")
+                break
+        except:
+            pass
+    
+    if df is None:
+        # Busca recursiva como último recurso
+        try:
+            xlsx_files = glob.glob('**/palestra_desenvolvimento.xlsx', recursive=True)
+            if xlsx_files:
+                df = pd.read_excel(xlsx_files[0])
+                st.write(f"✅ Dados carregados de: {xlsx_files[0]}")
+        except:
+            pass
+    
+    if df is None:
+        st.error("❌ Arquivo palestra_desenvolvimento.xlsx não encontrado em nenhum local")
+        st.stop()
     
     # Limpar nomes de colunas
     df.columns = [col.strip() for col in df.columns]
-    
-    # Converter data
-    df['Carimbo de data/hora'] = pd.to_datetime(df['Carimbo de data/hora'])
     
     return df
 
