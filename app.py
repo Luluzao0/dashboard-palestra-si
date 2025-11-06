@@ -168,7 +168,7 @@ with tab3:
     
     with col2:
         fig, ax = plt.subplots(figsize=(10, 5))
-        media_idade = df.groupby('Idade')[df.columns[-1]].apply(lambda x: pd.to_numeric(x, errors='coerce')).mean().sort_values(ascending=False)
+        media_idade = df.groupby('Idade')[df.columns[-1]].apply(lambda x: pd.to_numeric(x, errors='coerce')).mean().sort_values()[::-1]
         colors_media = sns.color_palette("RdYlGn", len(media_idade))
         ax.barh(media_idade.index, media_idade.values, color=colors_media, edgecolor='black', alpha=0.8)
         ax.set_xlabel('Nota Média', fontsize=11, fontweight='bold')
