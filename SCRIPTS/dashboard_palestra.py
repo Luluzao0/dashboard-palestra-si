@@ -47,7 +47,6 @@ def carregar_dados():
         try:
             if os.path.exists(path):
                 df = pd.read_excel(path)
-                st.write(f"✅ Dados carregados de: {path}")
                 break
         except:
             pass
@@ -58,12 +57,11 @@ def carregar_dados():
             xlsx_files = glob.glob('**/palestra_desenvolvimento.xlsx', recursive=True)
             if xlsx_files:
                 df = pd.read_excel(xlsx_files[0])
-                st.write(f"✅ Dados carregados de: {xlsx_files[0]}")
         except:
             pass
     
     if df is None:
-        st.error("❌ Arquivo palestra_desenvolvimento.xlsx não encontrado em nenhum local")
+        st.error("❌ Arquivo palestra_desenvolvimento.xlsx não encontrado")
         st.stop()
     
     # Limpar nomes de colunas
