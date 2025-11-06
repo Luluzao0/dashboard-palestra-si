@@ -25,5 +25,9 @@ venv/
 ENV/
 env/
 .DS_Store
-*.xlsx
+
+# Ignorar CSVs de saída, mas permitir dados
+OUTPUTS/
 *.csv
+!data/*.xlsx
+!data/palestra_desenvolvimento.xlsx
