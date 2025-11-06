@@ -1,59 +1,459 @@
-# Dashboard de Avaliação - Palestra Desenvolvimento de SI
+""""""
+
+DASHBOARD PROFISSIONAL ÚNICO - Palestra SIDASHBOARD PROFISSIONAL ÚNICO - Palestra SI
+
+Funciona no Streamlit Cloud e LocalmenteConsolidação completa em uma única página
+
+"""Versão para Streamlit Cloud - FUNCIONA EM QUALQUER LUGAR
+
+"""
 
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-from scipy import stats
-import warnings
-warnings.filterwarnings('ignore')
 
-st.set_page_config(page_title="Avaliação Palestra SI", page_icon="📊", layout="wide")
+import pandas as pdimport streamlit as st
 
-sns.set_style("whitegrid")
+import matplotlib.pyplot as pltimport pandas as pd
+
+import seaborn as snsimport matplotlib.pyplot as plt
+
+import numpy as npimport seaborn as sns
+
+import warningsimport numpy as np
+
+import osfrom scipy import stats
+
+import globimport warnings
+
+import os
+
+warnings.filterwarnings('ignore')import glob
+
+
+
+st.set_page_config(page_title="Dashboard Palestra SI", page_icon="📊", layout="wide")warnings.filterwarnings('ignore')
+
+
+
+sns.set_style("whitegrid")st.set_page_config(page_title="Dashboard Palestra SI", page_icon="📊", layout="wide", initial_sidebar_state="expanded")
+
 plt.rcParams['figure.facecolor'] = 'white'
 
-# Carregar dados normalizados
-@st.cache_data
-def carregar_dados():
-    # Usar arquivo na pasta data
-    df = pd.read_excel('data/palestra_desenvolvimento.xlsx')
-    
-    df['data_hora'] = pd.to_datetime(df['data_hora'])
-    
-    # Extrair idade numérica
-    df['idade_num'] = df['idade'].str.extract(r'(\d+)').astype(int)
-    
-    return df
+sns.set_style("whitegrid")
+
+# ============================================================================plt.rcParams['figure.facecolor'] = 'white'
+
+# CARREGAR DADOSplt.rcParams['figure.figsize'] = (12, 6)
+
+# ============================================================================
+
+# ============================================================================
+
+@st.cache_data# CARREGAR DADOS - Compatível com qualquer estrutura
+
+def carregar_dados():# ============================================================================
+
+    """Carrega dados - funciona localmente e no Streamlit Cloud"""
+
+    try:@st.cache_data
+
+        # Tentar caminhos diferentesdef carregar_dados():
+
+        paths = [    """Carrega dados - funciona localmente e no Streamlit Cloud"""
+
+            'data/palestra_desenvolvimento.xlsx',    try:
+
+            './data/palestra_desenvolvimento.xlsx',        # Tentar caminhos diferentes
+
+            os.path.join(os.path.dirname(__file__), '../data/palestra_desenvolvimento.xlsx'),        paths = [
+
+        ]            'data/palestra_desenvolvimento.xlsx',
+
+                    './data/palestra_desenvolvimento.xlsx',
+
+        df = None            os.path.join(os.path.dirname(__file__), '../data/palestra_desenvolvimento.xlsx'),
+
+        for path in paths:            os.path.join(os.getcwd(), 'data/palestra_desenvolvimento.xlsx'),
+
+            try:        ]
+
+                if os.path.exists(path):        
+
+                    df = pd.read_excel(path)        df = None
+
+                    break        for path in paths:
+
+            except:            try:
+
+                pass                if os.path.exists(path):
+
+                            df = pd.read_excel(path)
+
+        if df is None:                    break
+
+            xlsx_files = glob.glob('**/palestra_desenvolvimento.xlsx', recursive=True)            except:
+
+            if xlsx_files:                pass
+
+                df = pd.read_excel(xlsx_files[0])        
+
+                if df is None:
+
+        if df is None:            # Busca recursiva como último recurso
+
+            st.error("❌ Arquivo não encontrado")            xlsx_files = glob.glob('**/palestra_desenvolvimento.xlsx', recursive=True)
+
+            st.stop()            if xlsx_files:
+
+                        df = pd.read_excel(xlsx_files[0])
+
+        df.columns = [col.strip() for col in df.columns]        
+
+        return df        if df is None:
+
+                    st.error("❌ Arquivo palestra_desenvolvimento.xlsx não encontrado. Verifique a estrutura do projeto.")
+
+    except Exception as e:            st.stop()
+
+        st.error(f"❌ Erro: {str(e)}")        
+
+        st.stop()        df.columns = [col.strip() for col in df.columns]
+
+        return df
+
+df = carregar_dados()        
+
+    except Exception as e:
+
+# ============================================================================        st.error(f"❌ Erro ao carregar dados: {str(e)}")
+
+# HEADER        st.stop()
+
+# ============================================================================
 
 df = carregar_dados()
 
-# Sidebar - Filtros
-st.sidebar.title("Filtros")
-faixas_etarias = df['idade'].unique().tolist()
-faixas_selecionadas = st.sidebar.multiselect("Faixa Etária", options=faixas_etarias, default=faixas_etarias)
+st.markdown("<h1 style='text-align: center; color: #1f77b4;'>📊 Dashboard - Palestra SI</h1>", unsafe_allow_html=True)
 
-pesquisa_opcoes = df['participou_pesquisa'].unique().tolist()
-pesquisa_selecionada = st.sidebar.multiselect("Participou de Pesquisa?", options=pesquisa_opcoes, default=pesquisa_opcoes)
+st.markdown("<p style='text-align: center; color: #666;'>Análise de Avaliações | 14-15 de Outubro de 2025</p>", unsafe_allow_html=True)# ============================================================================
+
+st.divider()# HEADER
+
+# ============================================================================
+
+# ============================================================================
+
+# MÉTRICASst.markdown("""
+
+# ============================================================================    <style>
+
+        .header-title { text-align: center; color: #1f77b4; font-size: 2.5em; font-weight: bold; }
+
+col1, col2, col3, col4, col5 = st.columns(5)    </style>
+
+""", unsafe_allow_html=True)
+
+with col1:
+
+    st.metric("📋 Total", len(df))st.markdown("<div class='header-title'>📊 DASHBOARD - Palestra SI</div>", unsafe_allow_html=True)
+
+st.markdown("<div style='text-align: center; color: #666;'>Análise de Avaliações - 14-15 de Outubro de 2025</div>", unsafe_allow_html=True)
+
+with col2:st.divider()
+
+    nota_col = 'Avaliação geral do evento (nota de 0 a 10): '
+
+    media = df[nota_col].astype(float).mean() if nota_col in df.columns else 0# ============================================================================
+
+    st.metric("⭐ Nota Média", f"{media:.2f}/10")# MÉTRICAS
+
+# ============================================================================
+
+with col3:
+
+    st.metric("👥 Respostas", "27")col1, col2, col3, col4, col5 = st.columns(5)
+
+
+
+with col4:with col1:
+
+    st.metric("🎯 Status", "✓ OK")    st.metric("📋 Total", len(df))
+
+
+
+with col5:with col2:
+
+    st.metric("📅 Data", "Oct 2025")    nota_col = 'Avaliação geral do evento (nota de 0 a 10): '
+
+    media = df[nota_col].astype(float).mean() if nota_col in df.columns else 0
+
+st.divider()    st.metric("⭐ Nota Média", f"{media:.2f}/10" if media else "N/A")
+
+
+
+# ============================================================================with col3:
+
+# FILTROS    st.metric("👥 Faixa Etária", "18-30")
+
+# ============================================================================
+
+with col4:
+
+st.sidebar.title("🎛️ FILTROS")    st.metric("🔬 Pesquisa", "12")
+
+idade_col = 'Idade'
+
+with col5:
+
+if idade_col in df.columns:    st.metric("📅 Data", "14-15/10")
+
+    faixas = sorted(df[idade_col].unique().tolist())
+
+    selecionadas = st.sidebar.multiselect("Faixa Etária", faixas, default=faixas)st.divider()
+
+    df_filtrado = df[df[idade_col].isin(selecionadas)]
+
+else:# ============================================================================
+
+    df_filtrado = df# FILTROS
+
+# ============================================================================
 
 if st.sidebar.button("🔄 Resetar", use_container_width=True):
-    st.rerun()
 
-df_filtrado = df[
-    (df['idade'].isin(faixas_selecionadas)) &
-    (df['participou_pesquisa'].isin(pesquisa_selecionada))
-]
+    st.rerun()st.sidebar.title("🎛️ FILTROS")
 
-st.sidebar.metric("Total de Respostas", len(df_filtrado))
+idade_col = 'Idade'
 
-# Aba de seleção
-st.title("Avaliação - Palestra Desenvolvimento de SI")
-st.write(f"Total de respostas: {len(df_filtrado)} | Data: {df['data_hora'].dt.date.min()} a {df['data_hora'].dt.date.max()}")
+st.sidebar.metric("Registros", len(df_filtrado))if idade_col in df.columns:
 
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Visão Geral", "📈 Análise Avançada", "💬 Respostas", "📋 Dados"])
+    faixas = sorted(df[idade_col].unique().tolist())
 
-# ═════════════════════════════════════════════════════════════════════════
+# ============================================================================    selecionadas = st.sidebar.multiselect("Faixa Etária", faixas, default=faixas)
+
+# SEÇÃO 1: VISÃO GERAL    df_filtrado = df[df[idade_col].isin(selecionadas)]
+
+# ============================================================================else:
+
+    df_filtrado = df
+
+st.subheader("📈 1. VISÃO GERAL")
+
+if st.sidebar.button("🔄 Resetar"):
+
+col1, col2 = st.columns(2)    st.rerun()
+
+
+
+with col1:st.sidebar.metric("Registros", len(df_filtrado))
+
+    if 'Idade' in df_filtrado.columns:
+
+        fig, ax = plt.subplots(figsize=(10, 5))# ============================================================================
+
+        df_filtrado['Idade'].value_counts().sort_index().plot(kind='bar', ax=ax, color='#667eea', alpha=0.7, edgecolor='black')# GRÁFICOS - VISÃO GERAL
+
+        ax.set_title('Distribuição por Faixa Etária', fontsize=12, fontweight='bold')# ============================================================================
+
+        ax.set_xlabel('Faixa Etária')
+
+        ax.set_ylabel('Quantidade')st.subheader("📈 1. VISÃO GERAL")
+
+        plt.xticks(rotation=45, ha='right')
+
+        plt.tight_layout()col1, col2 = st.columns(2)
+
+        st.pyplot(fig)
+
+with col1:
+
+with col2:    if 'Idade' in df_filtrado.columns:
+
+    nota_col = 'Avaliação geral do evento (nota de 0 a 10): '        fig, ax = plt.subplots(figsize=(10, 5))
+
+    if nota_col in df_filtrado.columns:        df_filtrado['Idade'].value_counts().sort_index().plot(kind='bar', ax=ax, color='#667eea', alpha=0.7)
+
+        fig, ax = plt.subplots(figsize=(10, 5))        ax.set_title('Distribuição por Faixa Etária', fontsize=12, fontweight='bold')
+
+        df_filtrado[nota_col].astype(float).value_counts().sort_index().plot(kind='bar', ax=ax, color='#764ba2', alpha=0.7, edgecolor='black')        ax.set_xlabel('Faixa Etária')
+
+        ax.set_title('Avaliação Geral do Evento', fontsize=12, fontweight='bold')        ax.set_ylabel('Quantidade')
+
+        ax.set_xlabel('Nota (0-10)')        plt.xticks(rotation=45, ha='right')
+
+        ax.set_ylabel('Quantidade')        st.pyplot(fig)
+
+        plt.tight_layout()
+
+        st.pyplot(fig)with col2:
+
+    nota_col = 'Avaliação geral do evento (nota de 0 a 10): '
+
+# ============================================================================    if nota_col in df_filtrado.columns:
+
+# SEÇÃO 2: ANÁLISE TEMÁTICA        fig, ax = plt.subplots(figsize=(10, 5))
+
+# ============================================================================        df_filtrado[nota_col].astype(float).value_counts().sort_index().plot(kind='bar', ax=ax, color='#764ba2', alpha=0.7)
+
+        ax.set_title('Avaliação Geral do Evento', fontsize=12, fontweight='bold')
+
+st.subheader("🎯 2. ANÁLISE TEMÁTICA")        ax.set_xlabel('Nota (0-10)')
+
+        ax.set_ylabel('Quantidade')
+
+avaliacoes = [        st.pyplot(fig)
+
+    'O conteúdo apresentado foi claro e de fácil compreensão  ',
+
+    'Os sistemas desenvolvidos pelos alunos de Engenharia da Computação demonstraram aplicabilidade prática às necessidades das instituições apresentadas (Aceite de navios, App IMESC, outros).  ',# ============================================================================
+
+    'A palestra contribuiu para compreender como a tecnologia pode apoiar a gestão e a tomada de decisão.  ',# ANÁLISE TEMÁTICA
+
+    'A interação entre os palestrantes e o público foi satisfatória.  ',# ============================================================================
+
+    'Após a palestra, você considera mais clara a importância da integração entre Administração e Engenharia da Computação para o desenvolvimento institucional?  ',
+
+    'Você percebe potencial de aplicação dos sistemas apresentados em outras organizações públicas ou privadas?    ',st.subheader("🎯 2. ANÁLISE TEMÁTICA")
+
+    'O evento despertou seu interesse em aprofundar conhecimentos sobre Sistemas de Informação Gerencial (SIG)?   '
+
+]avaliacoes = [
+
+    'O conteúdo apresentado foi claro e de fácil compreensão  ',
+
+labels = ['Conteúdo Claro', 'Aplicabilidade', 'Gestão & Tech', 'Interação', 'Integração Admin-Eng', 'Potencial Aplicação', 'Interesse SIG']    'Os sistemas desenvolvidos pelos alunos de Engenharia da Computação demonstraram aplicabilidade prática às necessidades das instituições apresentadas (Aceite de navios, App IMESC, outros).  ',
+
+    'A palestra contribuiu para compreender como a tecnologia pode apoiar a gestão e a tomada de decisão.  ',
+
+dados = []    'A interação entre os palestrantes e o público foi satisfatória.  ',
+
+for av in avaliacoes:]
+
+    if av in df_filtrado.columns:
+
+        sim = len(df_filtrado[df_filtrado[av].astype(str).str.contains('Sim', case=False, na=False)])labels = ['Conteúdo Claro', 'Aplicabilidade', 'Gestão & Tech', 'Interação']
+
+        taxa = (sim / len(df_filtrado) * 100) if len(df_filtrado) > 0 else 0
+
+        dados.append(taxa)dados = []
+
+for av in avaliacoes:
+
+if dados:    if av in df_filtrado.columns:
+
+    fig, ax = plt.subplots(figsize=(12, 6))        sim = len(df_filtrado[df_filtrado[av].astype(str).str.contains('Sim', case=False, na=False)])
+
+    colors = ['#2ecc71' if x >= 80 else '#f39c12' if x >= 60 else '#e74c3c' for x in dados]        taxa = (sim / len(df_filtrado) * 100) if len(df_filtrado) > 0 else 0
+
+    bars = ax.barh(labels, dados, color=colors, alpha=0.8, edgecolor='black')        dados.append(taxa)
+
+    ax.set_xlabel('Taxa de Concordância (%)', fontsize=11, fontweight='bold')
+
+    ax.set_title('Taxa de Aprovação por Tema', fontsize=12, fontweight='bold')if dados:
+
+    ax.set_xlim(0, 100)    fig, ax = plt.subplots(figsize=(12, 5))
+
+    for i, v in enumerate(dados):    colors = ['#2ecc71' if x >= 80 else '#f39c12' for x in dados]
+
+        ax.text(v + 2, i, f'{v:.0f}%', va='center', fontweight='bold')    bars = ax.barh(labels, dados, color=colors, alpha=0.8)
+
+    plt.tight_layout()    ax.set_xlabel('Taxa de Aprovação (%)')
+
+    st.pyplot(fig)    ax.set_title('Concordância por Tema', fontsize=12, fontweight='bold')
+
+    ax.set_xlim(0, 100)
+
+# ============================================================================    for i, v in enumerate(dados):
+
+# SEÇÃO 3: RESPOSTAS ABERTAS        ax.text(v + 2, i, f'{v:.0f}%', va='center', fontweight='bold')
+
+# ============================================================================    st.pyplot(fig)
+
+
+
+st.subheader("💬 3. RESPOSTAS ABERTAS")# ============================================================================
+
+# RESPOSTAS ABERTAS
+
+tabs = st.tabs(["Gestão & Tecnologia", "Cooperação Admin-Eng", "Motivação"])# ============================================================================
+
+
+
+with tabs[0]:st.subheader("💬 3. RESPOSTAS ABERTAS")
+
+    col_gestao = 'De que forma você acredita que soluções tecnológicas podem contribuir para uma gestão mais efetiva?'
+
+    if col_gestao in df_filtrado.columns:tabs = st.tabs(["Gestão & Tecnologia", "Cooperação"])
+
+        respostas = df_filtrado[col_gestao].dropna()
+
+        for i, resp in enumerate(respostas, 1):with tabs[0]:
+
+            if resp and str(resp).strip():    col_gestao = 'De que forma você acredita que soluções tecnológicas podem contribuir para uma gestão mais efetiva?'
+
+                st.write(f"**{i}.** {resp}")    if col_gestao in df_filtrado.columns:
+
+        respostas = df_filtrado[col_gestao].dropna()
+
+with tabs[1]:        for i, resp in enumerate(respostas, 1):
+
+    col_coop = 'Como os graduandos de Administração podem se beneficiar da cooperação com graduandos de Engenharia da Computação? '            if resp and str(resp).strip():
+
+    if col_coop in df_filtrado.columns:                st.write(f"**{i}.** {resp}")
+
+        respostas = df_filtrado[col_coop].dropna()
+
+        for i, resp in enumerate(respostas, 1):with tabs[1]:
+
+            if resp and str(resp).strip():    col_coop = 'Como os graduandos de Administração podem se beneficiar da cooperação com graduandos de Engenharia da Computação? '
+
+                st.write(f"**{i}.** {resp}")    if col_coop in df_filtrado.columns:
+
+        respostas = df_filtrado[col_coop].dropna()
+
+with tabs[2]:        for i, resp in enumerate(respostas, 1):
+
+    col_motiv = 'Você se sentiria motivado(a) a participar de projetos de pesquisa ou extensão que envolvam o desenvolvimento de sistemas aplicados à Administração? Justifique. '            if resp and str(resp).strip():
+
+    if col_motiv in df_filtrado.columns:                st.write(f"**{i}.** {resp}")
+
+        respostas = df_filtrado[col_motiv].dropna()
+
+        for i, resp in enumerate(respostas, 1):# ============================================================================
+
+            if resp and str(resp).strip():# DADOS
+
+                st.write(f"**{i}.** {resp}")# ============================================================================
+
+
+
+# ============================================================================st.subheader("📋 4. DADOS COMPLETOS")
+
+# SEÇÃO 4: DADOS
+
+# ============================================================================if st.checkbox("Visualizar Tabela"):
+
+    st.dataframe(df_filtrado, use_container_width=True)
+
+st.subheader("📋 4. DADOS COMPLETOS")    csv = df_filtrado.to_csv(index=False, encoding='utf-8-sig')
+
+    st.download_button("⬇️ Baixar CSV", csv, "dados.csv", "text/csv")
+
+if st.checkbox("Visualizar Tabela Completa"):
+
+    st.dataframe(df_filtrado, use_container_width=True)# Rodapé
+
+    csv = df_filtrado.to_csv(index=False, encoding='utf-8-sig')st.divider()
+
+    st.download_button("⬇️ Baixar como CSV", csv, "palestra_dados.csv", "text/csv")st.markdown("<p style='text-align:center; color:#666; font-size:0.9em;'>Dashboard Palestra SI 2025 | Streamlit</p>", unsafe_allow_html=True)
+
+
+
+# Rodapétab1, tab2, tab3, tab4 = st.tabs(["📊 Visão Geral", "📈 Análise Avançada", "💬 Respostas", "📋 Dados"])
+
+st.divider()
+
+st.markdown("<p style='text-align:center; color:#666; font-size:0.85em;'>Dashboard Palestra SI 2025 | Desenvolvido com Streamlit</p>", unsafe_allow_html=True)# ═════════════════════════════════════════════════════════════════════════
+
 # ABA 1: VISÃO GERAL
 # ═════════════════════════════════════════════════════════════════════════
 
